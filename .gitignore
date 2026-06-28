@@ -1,0 +1,37 @@
+# ---- Build artifacts ----
+test/sil_test
+test/*.o
+*.exe
+*.out
+build/
+Debug/
+Release/
+
+# ---- MATLAB / Simulink ----
+*.asv
+*.autosave
+slprj/
+*.slxc
+*.mex*
+codegen/
+*.bak
+
+# Simulink Coder internal/cache (keep the generated .c/.h and .arxml)
+**/tmwinternal/
+**/*.mat
+**/*.dmr
+**/*.tmw
+**/buildInfo.mat
+**/codeInfo.mat
+**/rtw_proj.tmw
+
+# ---- Python ----
+__pycache__/
+*.pyc
+.venv/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

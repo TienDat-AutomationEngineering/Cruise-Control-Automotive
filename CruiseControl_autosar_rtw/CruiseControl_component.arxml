@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Auto generated XML Component Description for model CruiseControl
+Model version                : 1.4
+Simulink Coder version       : Simulink Coder 25.1 (R2025a) 21-Nov-2024
+XML source code generated on : Sun Jun 28 2026
+-->
+<AUTOSAR xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00052.xsd">
+    <AR-PACKAGES>
+        <AR-PACKAGE>
+            <SHORT-NAME>Components</SHORT-NAME>
+            <ELEMENTS>
+                <APPLICATION-SW-COMPONENT-TYPE UUID="a1c2e4f6-1000-4b1a-9001-000000000001">
+                    <SHORT-NAME>CruiseControl</SHORT-NAME>
+                    <PORTS>
+                        <R-PORT-PROTOTYPE UUID="a1c2e4f6-1001-4b1a-9001-000000000002">
+                            <SHORT-NAME>VehSpdLgt</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/VehSpdLgt</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <R-PORT-PROTOTYPE UUID="a1c2e4f6-1002-4b1a-9001-000000000003">
+                            <SHORT-NAME>VehSpdSetPt</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/VehSpdSetPt</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <R-PORT-PROTOTYPE UUID="a1c2e4f6-1003-4b1a-9001-000000000004">
+                            <SHORT-NAME>CcEna</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/CcEna</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <P-PORT-PROTOTYPE UUID="a1c2e4f6-1004-4b1a-9001-000000000005">
+                            <SHORT-NAME>EngTqReq</SHORT-NAME>
+                            <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/EngTqReq</PROVIDED-INTERFACE-TREF>
+                        </P-PORT-PROTOTYPE>
+                    </PORTS>
+                    <INTERNAL-BEHAVIORS>
+                        <SWC-INTERNAL-BEHAVIOR UUID="a1c2e4f6-2000-4b1a-9001-000000000006">
+                            <SHORT-NAME>IB</SHORT-NAME>
+                            <EVENTS>
+                                <TIMING-EVENT UUID="a1c2e4f6-2001-4b1a-9001-000000000007">
+                                    <SHORT-NAME>CruiseControl_Step_Ev</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/CruiseControl/IB/CruiseControl_Step</START-ON-EVENT-REF>
+                                    <PERIOD>0.01</PERIOD>
+                                </TIMING-EVENT>
+                            </EVENTS>
+                            <RUNNABLES>
+                                <RUNNABLE-ENTITY UUID="a1c2e4f6-2002-4b1a-9001-000000000008">
+                                    <SHORT-NAME>CruiseControl_Step</SHORT-NAME>
+                                    <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                                    <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                                    <SYMBOL>CruiseControl_Step</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY UUID="a1c2e4f6-2003-4b1a-9001-000000000009">
+                                    <SHORT-NAME>CruiseControl_Init</SHORT-NAME>
+                                    <MINIMUM-START-INTERVAL>0</MINIMUM-START-INTERVAL>
+                                    <CAN-BE-INVOKED-CONCURRENTLY>false</CAN-BE-INVOKED-CONCURRENTLY>
+                                    <SYMBOL>CruiseControl_Init</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                            </RUNNABLES>
+                        </SWC-INTERNAL-BEHAVIOR>
+                    </INTERNAL-BEHAVIORS>
+                </APPLICATION-SW-COMPONENT-TYPE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>
