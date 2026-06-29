@@ -48,7 +48,7 @@ Verify the tick rate: `f = TimerClk / ((PSC+1)(ARR+1)) = 72e6 / (7200 × 100) = 
        Cruise_Control/CruiseControl_autosar_rtw
        Cruise_Control/CruiseControl_autosar_rtw/stub)
    ```
-3. Paste the four blocks from [`main_usercode.c`](main_usercode.c) into the matching `USER CODE` sections of `Core/Src/main.c` (Includes, PV, 0, 2).
+3. The integration code is already in `Core/Src/main.c` under the `USER CODE` sections (Includes, PV, 0, 2): the simplified RTE, the 100 Hz TIM2 task calling `CruiseControl_Step()`, and the mode manager. If you regenerate and the sections are cleared, re-insert those blocks.
 4. Build (CMake) and flash with ST-Link from VSCode.
 
 ## Simplified RTE

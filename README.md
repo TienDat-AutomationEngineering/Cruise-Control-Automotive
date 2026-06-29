@@ -135,7 +135,6 @@ Port and interface definitions are in the ARXML files (`CruiseControl_component.
 ├── MODEL_SPEC.md                  # Simulink/Stateflow block specification + control theory
 ├── HARDWARE.md                    # STM32F407 bring-up: peripherals, pin map, wiring, CubeMonitor
 ├── build_cruise_model.m           # builds the model via the Simulink API + SIL harness
-├── main_usercode.c                # STM32F407 integration (TIM2/ADC/PWM, mode mgr, simplified RTE)
 ├── AUTOSAR_Include/               # Platform_Types.h, Std_Types.h, Compiler.h
 ├── CruiseControl_autosar_rtw/     # generated AUTOSAR SWC
 │   ├── CruiseControl.c / .h
@@ -178,7 +177,7 @@ Requires Simulink, Stateflow, Embedded Coder and AUTOSAR Blockset. Without AUTOS
 
 ### Deploy on STM32F407
 
-The generated SWC is integrated bare-metal via a simplified RTE. Full peripheral configuration, pin map and wiring are documented in [`HARDWARE.md`](HARDWARE.md). In short: CubeMX (CMake toolchain) → VSCode → add the SWC sources/includes to `CMakeLists.txt` → paste the blocks from [`main_usercode.c`](main_usercode.c) into the matching `USER CODE` sections → build and flash with ST-Link.
+The generated SWC is integrated bare-metal via a simplified RTE. The complete, buildable firmware is in [`CruiseControl_F407/`](CruiseControl_F407) — the integration code (simplified RTE, 100 Hz task, mode manager) lives in its `Core/Src/main.c` under the `USER CODE` sections. Full peripheral configuration, pin map and wiring are documented in [`HARDWARE.md`](HARDWARE.md).
 
 ---
 
