@@ -5,13 +5,14 @@
 ![Target](https://img.shields.io/badge/Target-STM32F407%20(Cortex--M4F)-brightgreen)
 ![Language](https://img.shields.io/badge/Code-C99%20(auto--generated)-lightgrey)
 ![Build](https://img.shields.io/badge/SIL%20%2B%20C%20compile-passing-success)
+![On-target](https://img.shields.io/badge/On--target-STM32F407%20validated-success)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A production-style **Model-Based Design (MBD)** demonstration of an automotive **cruise control** software function, taken from control design all the way to embedded integration:
+A production-style **Model-Based Design (MBD)** demonstration of an automotive **cruise control** software function, taken from control design all the way to embedded integration **and validated on real hardware**:
 
-> **Simulink/Stateflow model → AUTOSAR Blockset code generation (`autosar.tlc`, ARXML R23-11) → STM32F407 HAL integration with a simplified RTE.**
+> **Simulink/Stateflow model → AUTOSAR Blockset code generation (`autosar.tlc`, ARXML R23-11) → STM32F407 HAL integration with a simplified RTE → on-target run monitored live in STM32CubeMonitor.**
 
-The controller is a **PI speed regulator with back-calculation anti-windup and bumpless transfer**, packaged as an AUTOSAR Classic Software Component (SWC). The control law is verified by simulation and by compiling and running the generated C against a vehicle plant model.
+The controller is a **PI speed regulator with back-calculation anti-windup and bumpless transfer**, packaged as an AUTOSAR Classic Software Component (SWC). The control law is verified by simulation, by compiling and running the generated C against a vehicle plant model, and by **deploying to an STM32F407 board** where the live signals are observed in real time with STM32CubeMonitor.
 
 ---
 
@@ -23,6 +24,7 @@ The controller is a **PI speed regulator with back-calculation anti-windup and b
 - [AUTOSAR interface](#autosar-interface)
 - [Repository layout](#repository-layout)
 - [Build &amp; run](#build--run)
+- [Hardware bring-up & on-target validation](#hardware-bring-up--on-target-validation)
 - [Engineering highlights](#engineering-highlights)
 - [License](#license)
 
@@ -131,6 +133,7 @@ Port and interface definitions are in the ARXML files (`CruiseControl_component.
 .
 ├── README.md
 ├── MODEL_SPEC.md                  # Simulink/Stateflow block specification + control theory
+├── HARDWARE.md                    # STM32F407 bring-up: peripherals, pin map, wiring, CubeMonitor
 ├── build_cruise_model.m           # builds the model via the Simulink API + SIL harness
 ├── main_usercode.c                # STM32F407 integration (TIM2/ADC/PWM, mode mgr, simplified RTE)
 ├── AUTOSAR_Include/               # Platform_Types.h, Std_Types.h, Compiler.h
@@ -139,6 +142,12 @@ Port and interface definitions are in the ARXML files (`CruiseControl_component.
 │   ├── CruiseControl_component.arxml
 │   ├── CruiseControl_interface.arxml
 │   └── stub/                      # Rte_CruiseControl.h, Rte_Type.h, MemMap.h
+├── CruiseControl_F407/            # buildable STM32CubeMX/CMake firmware project
+│   ├── Core/                      # main.c with the integrated SWC + simplified RTE
+│   ├── Drivers/                   # STM32 HAL + CMSIS
+│   ├── Cruise_Control/            # SWC sources referenced by the build
+│   ├── CMakeLists.txt             # SWC sources/includes added under "user" sections
+│   └── CruiseControl_F407.ioc     # CubeMX configuration
 ├── test/                          # SIL verification harness (C + Python)
 └── docs/img/                      # result plots
 ```
@@ -167,19 +176,30 @@ python3 plant_sim.py
 ```
 Requires Simulink, Stateflow, Embedded Coder and AUTOSAR Blockset. Without AUTOSAR Blockset the model still simulates; the committed C is the reference output.
 
-### Deploy on STM32F407 (STM32CubeIDE)
+### Deploy on STM32F407
 
-1. Create a CubeMX project: 72 MHz clock, TIM2 @ 100 Hz, TIM3 PWM (CH1 = PA6), ADC1 (PA1), GPIO buttons PC0–PC3, LED PA5.
-2. Add `CruiseControl_autosar_rtw/` and `AUTOSAR_Include/` to the include paths.
-3. Paste the blocks from [`main_usercode.c`](main_usercode.c) into the matching `USER CODE` sections.
-4. Build and flash.
+The generated SWC is integrated bare-metal via a simplified RTE. Full peripheral configuration, pin map and wiring are documented in [`HARDWARE.md`](HARDWARE.md). In short: CubeMX (CMake toolchain) → VSCode → add the SWC sources/includes to `CMakeLists.txt` → paste the blocks from [`main_usercode.c`](main_usercode.c) into the matching `USER CODE` sections → build and flash with ST-Link.
+
+---
+
+## Hardware bring-up & on-target validation
+
+The function was deployed and **validated on a real STM32F407 board**, not only in simulation.
+
+- **Toolchain:** STM32CubeMX (CMake project) → VSCode + arm-none-eabi-gcc → ST-Link flash.
+- **Control task:** the AUTOSAR runnable `CruiseControl_Step()` is called from a 100 Hz TIM2 interrupt — the hardware realisation of the model's 10 ms `TIMING-EVENT`.
+- **I/O mapping:** potentiometer on ADC1/PA1 → `VehSpdLgt`; Set/Resume/Cancel/Brake buttons on PC0–PC3 → mode manager; `EngTqReq` → TIM3 PWM (PA6); cruise-active LED on PA5.
+- **Live monitoring:** the RTE buffers (`rte_VehSpdLgt`, `rte_EngTqReq`, `rte_CcEna`) are observed in real time with **STM32CubeMonitor** over SWD, confirming the PI law, anti-windup and the OFF/ACTIVE/OVERRIDE state machine behave on-target exactly as in the model.
+
+See [`HARDWARE.md`](HARDWARE.md) for the peripheral configuration table, wiring diagram and bring-up steps.
 
 ---
 
 ## Engineering highlights
 
-- **Evidence over assertion** — the controller is not just written, it is proven: simulated, compiled warning-free, and run against a plant with quantified overshoot, settling time and steady-state error.
-- **Anti-windup with numbers** — a concrete, defensible result (110 % → 4.6 % overshoot) rather than a buzzword.
+- **From model to silicon** — a complete MBD chain: Simulink model → AUTOSAR C → bare-metal STM32F407, validated live with CubeMonitor.
+- **Evidence over assertion** — the controller is not just written, it is proven: simulated, compiled warning-free, run against a plant with quantified overshoot/settling/steady-state error, and exercised on real hardware.
+- **Anti-windup with numbers** — a concrete, defensible result (110 % → 1.0 % overshoot) rather than a buzzword.
 - **Standard-compliant AUTOSAR** — real SWC/RTE/ARXML structure, not pseudo-code.
 - **Reproducible** — anyone can clone and re-run the verification in seconds.
 
